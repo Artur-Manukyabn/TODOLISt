@@ -28,17 +28,18 @@ app.use(
   cors({
     credentials: true,
     origin(origin, callback) {
-      if (!origin) return callback(null, true);
+      // Echo the exact browser Origin to avoid a trailing-slash mismatch.
+      if (!origin) return callback(null, false);
 
       const normalizedOrigin = origin.replace(/\/$/, "");
-      const allowed =
-        configuredOrigins.includes(normalizedOrigin) ||
-        normalizedOrigin.endsWith(".vercel.app");
+      const allowed = configuredOrigins.includes(normalizedOrigin)
+        || normalizedOrigin.endsWith(".vercel.app");
 
-      callback(
-        allowed ? null : new Error("Origin is not allowed by CORS"),
-        allowed,
-      );
+      if (!allowed) {
+        return callback(new Error("Origin is not allowed by CORS"), false);
+      }
+
+      callback(null, normalizedOrigin);
     },
   }),
 );
