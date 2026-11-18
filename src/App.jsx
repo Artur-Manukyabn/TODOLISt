@@ -242,7 +242,7 @@ export default function App() {
       </div>
 
       <AddTodoForm
-        key={editing?.id || 'new'}
+        key={editing?.id || "new"}
         open={formOpen}
         todo={editing}
         onClose={() => {
