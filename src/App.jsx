@@ -13,6 +13,13 @@ export default function App() {
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("deadline");
+  const [authMode, setAuthMode] = useState("login");
+  const [authForm, setAuthForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -94,8 +101,28 @@ export default function App() {
   };
 
   const logout = async () => {
-    await api.get("/api/auth/logout");
+    await api.post("/api/auth/logout");
     window.location.reload();
+  };
+
+  const submitAuth = async (event) => {
+    event.preventDefault();
+    setAuthError("");
+
+    try {
+      const endpoint =
+        authMode === "register" ? "/api/auth/register" : "/api/auth/login";
+      const payload =
+        authMode === "register"
+          ? authForm
+          : { email: authForm.email, password: authForm.password };
+      const { data } = await api.post(endpoint, payload);
+      setUser(data);
+      const todosResponse = await api.get("/api/todos");
+      setTodos(todosResponse.data);
+    } catch (error) {
+      setAuthError(error.response?.data?.message || "Authentication failed");
+    }
   };
 
   if (loading)
@@ -106,7 +133,6 @@ export default function App() {
     );
 
   if (!user) {
-    const serverUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-950 px-5 py-10">
         <section className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-7 text-center shadow-2xl sm:p-10">
@@ -115,15 +141,93 @@ export default function App() {
           </div>
           <h1 className="text-3xl font-bold text-white">Welcome to ToDo</h1>
           <p className="mt-3 text-base text-slate-300">
-            Sign in securely to organize your tasks and deadlines.
+            {authMode === "login"
+              ? "Sign in to manage your tasks."
+              : "Create an account to get started."}
           </p>
-          <a
-            href={`${serverUrl}/api/auth/google`}
-            className="mt-8 flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-white px-5 font-bold text-slate-800 shadow-lg hover:bg-slate-100"
-          >
-            <span className="text-xl font-black text-blue-500">G</span>Sign in
-            with Google
-          </a>
+
+          <div className="mt-6 grid grid-cols-2 rounded-xl bg-slate-800 p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode("login");
+                setAuthError("");
+              }}
+              className={`min-h-11 rounded-lg font-semibold ${
+                authMode === "login"
+                  ? "bg-white text-slate-900"
+                  : "text-slate-300"
+              }`}
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode("register");
+                setAuthError("");
+              }}
+              className={`min-h-11 rounded-lg font-semibold ${
+                authMode === "register"
+                  ? "bg-white text-slate-900"
+                  : "text-slate-300"
+              }`}
+            >
+              Register
+            </button>
+          </div>
+
+          <form onSubmit={submitAuth} className="mt-5 space-y-4 text-left">
+            {authMode === "register" && (
+              <label className="block text-sm font-semibold text-slate-200">
+                Username
+                <input
+                  required
+                  value={authForm.username}
+                  onChange={(event) =>
+                    setAuthForm({ ...authForm, username: event.target.value })
+                  }
+                  className="mt-2 min-h-12 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-base text-white outline-none focus:border-indigo-500"
+                />
+              </label>
+            )}
+            <label className="block text-sm font-semibold text-slate-200">
+              Email
+              <input
+                required
+                type="email"
+                value={authForm.email}
+                onChange={(event) =>
+                  setAuthForm({ ...authForm, email: event.target.value })
+                }
+                className="mt-2 min-h-12 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-base text-white outline-none focus:border-indigo-500"
+              />
+            </label>
+            <label className="block text-sm font-semibold text-slate-200">
+              Password
+              <input
+                required
+                type="password"
+                minLength={6}
+                value={authForm.password}
+                onChange={(event) =>
+                  setAuthForm({ ...authForm, password: event.target.value })
+                }
+                className="mt-2 min-h-12 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-base text-white outline-none focus:border-indigo-500"
+              />
+            </label>
+            {authError && (
+              <p className="rounded-lg bg-red-950/70 p-3 text-sm text-red-300">
+                {authError}
+              </p>
+            )}
+            <button
+              type="submit"
+              className="min-h-12 w-full rounded-xl bg-indigo-600 px-5 font-bold text-white hover:bg-indigo-500"
+            >
+              {authMode === "login" ? "Sign in" : "Create account"}
+            </button>
+          </form>
         </section>
       </main>
     );

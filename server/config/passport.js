@@ -1,29 +1,24 @@
 import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as LocalStrategy } from "passport-local";
+import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 
 export function configurePassport() {
   passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,
-      },
-      async (_accessToken, _refreshToken, profile, done) => {
+    new LocalStrategy(
+      { usernameField: "email", passwordField: "password" },
+      async (email, password, done) => {
         try {
-          const email = profile.emails?.[0]?.value?.toLowerCase();
-          if (!email)
-            return done(new Error("Google account has no email address"));
-
-          const googleName = profile.displayName?.trim() || email.split("@")[0];
-          const photo = profile.photos?.[0]?.value || "";
-
-          const user = await User.findOneAndUpdate(
-            { email },
-            { $set: { username: googleName, profileImage: photo } },
-            { new: true, upsert: true, setDefaultsOnInsert: true },
+          const normalizedEmail = email.trim().toLowerCase();
+          const user = await User.findOne({ email: normalizedEmail }).select(
+            "+password",
           );
+          if (!user)
+            return done(null, false, { message: "Invalid email or password" });
+
+          const validPassword = await bcrypt.compare(password, user.password);
+          if (!validPassword)
+            return done(null, false, { message: "Invalid email or password" });
 
           done(null, user);
         } catch (error) {

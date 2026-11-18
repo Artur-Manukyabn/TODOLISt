@@ -1,26 +1,72 @@
 import express from "express";
 import passport from "passport";
+import bcrypt from "bcryptjs";
+import User from "../models/User.js";
 
 const router = express.Router();
 
-router.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    prompt: "select_account",
-  }),
-);
+router.post("/register", async (req, res, next) => {
+  try {
+    const username = req.body.username?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login?error=oauth_failed",
-  }),
-  (_req, res) =>
-    res.redirect(process.env.CLIENT_URL || "http://localhost:5173"),
-);
+    if (!username || !email || !password)
+      return res
+        .status(400)
+        .json({ message: "Username, email and password are required" });
+    if (password.length < 6)
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
 
-router.get("/logout", (req, res, next) => {
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(409).json({ message: "Email is already registered" });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await User.create({
+      username,
+      email,
+      password: passwordHash,
+      profileImage: "",
+    });
+
+    req.login(user, (error) => {
+      if (error) return next(error);
+      res.status(201).json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        profileImage: "",
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", (error, user, info) => {
+    if (error) return next(error);
+    if (!user)
+      return res
+        .status(401)
+        .json({ message: info?.message || "Invalid credentials" });
+
+    req.login(user, (loginError) => {
+      if (loginError) return next(loginError);
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage || "",
+      });
+    });
+  })(req, res, next);
+});
+
+router.post("/logout", (req, res, next) => {
   req.logout((error) => {
     if (error) return next(error);
     req.session.destroy((sessionError) => {
