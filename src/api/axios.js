@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // Vite serves /api through the development proxy; production uses VITE_API_URL.
-  baseURL: import.meta.env.PROD ? import.meta.env.VITE_API_URL || "" : "",
+  // Vercel rewrites /api to Render; Vite proxies it during local development.
+  baseURL: "",
   withCredentials: true,
 });
 
