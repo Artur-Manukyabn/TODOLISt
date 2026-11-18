@@ -65,7 +65,7 @@ export default function AddTodoForm({ open, todo, onClose, onSave }) {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             maxLength={200}
-            className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-4 text-base outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-950 caret-indigo-600 placeholder:text-slate-400 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             placeholder="What needs to be done?"
           />
         </label>
@@ -75,7 +75,7 @@ export default function AddTodoForm({ open, todo, onClose, onSave }) {
             <select
               value={form.priority}
               onChange={(e) => setForm({ ...form, priority: e.target.value })}
-              className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base outline-none focus:border-indigo-500"
+              className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-950 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -88,7 +88,7 @@ export default function AddTodoForm({ open, todo, onClose, onSave }) {
               type="date"
               value={form.deadline}
               onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-              className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-3 text-base outline-none focus:border-indigo-500"
+              className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-950 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             />
           </label>
         </div>

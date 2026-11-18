@@ -17,7 +17,7 @@ export default function TodoItem({ todo, onToggle, onEdit, onDelete }) {
 
   return (
     <article
-      className={`rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md ${isOverdue ? "border-red-300" : "border-slate-200"} ${todo.completed ? "opacity-60" : ""}`}
+      className={`rounded-2xl border bg-white p-4 shadow-[0_8px_30px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_35px_rgba(15,23,42,0.10)] ${isOverdue ? "border-red-300" : "border-slate-200"} ${todo.completed ? "opacity-60" : ""}`}
     >
       <div className="flex items-start gap-3">
         <button

@@ -234,26 +234,37 @@ export default function App() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.10),_transparent_22rem),#f5f7fb] pb-24 text-slate-900 sm:pb-8">
+      <header className="sticky top-0 z-30 border-b border-white/70 bg-white/90 shadow-[0_1px_18px_rgba(15,23,42,0.06)] backdrop-blur-xl">
+        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between px-4 sm:min-h-20 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-xl text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-lg text-white shadow-lg shadow-indigo-200">
               ✓
             </div>
-            <span className="text-xl font-bold">ToDo</span>
+            <span className="text-xl font-extrabold tracking-tight">ToDo</span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+              className="min-h-11 rounded-xl bg-indigo-600 px-3.5 text-sm font-bold text-white shadow-md shadow-indigo-200 sm:hidden"
+            >
+              + Add
+            </button>
             {user.profileImage && (
               <img
                 src={user.profileImage}
                 alt=""
-                className="h-11 w-11 rounded-full object-cover"
+                className="h-10 w-10 rounded-full object-cover ring-2 ring-slate-100 sm:h-11 sm:w-11"
               />
             )}
             <button
+              type="button"
               onClick={logout}
-              className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold hover:bg-slate-100"
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 shadow-sm hover:border-slate-300 hover:bg-slate-50 sm:px-4"
             >
               Logout
             </button>
@@ -261,50 +272,42 @@ export default function App() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-8">
-        <aside className="mb-6 lg:mb-0">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 lg:sticky lg:top-6">
-            <p className="truncate text-sm text-slate-500">Signed in as</p>
-            <p className="truncate font-bold">{user.username}</p>
+      <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-8">
+        <aside className="mb-5 lg:mb-0">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.05)] lg:sticky lg:top-28">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Signed in as
+            </p>
+            <p className="mt-1 truncate text-base font-bold text-slate-800">
+              {user.username}
+            </p>
             <button
+              type="button"
               onClick={() => {
                 setEditing(null);
                 setFormOpen(true);
               }}
-              className="mt-5 min-h-12 w-full rounded-xl bg-indigo-600 px-4 font-bold text-white hover:bg-indigo-700"
+              className="mt-5 hidden min-h-12 w-full rounded-xl bg-indigo-600 px-4 font-bold text-white shadow-lg shadow-indigo-100 hover:-translate-y-0.5 hover:bg-indigo-700 sm:block"
             >
               + Add task
             </button>
           </div>
         </aside>
 
-        <section>
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-indigo-600">
-                My workspace
-              </p>
-              <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
-                Today's tasks
-              </h1>
-            </div>
-            <button
-              onClick={() => {
-                setEditing(null);
-                setFormOpen(true);
-              }}
-              className="min-h-12 rounded-xl bg-indigo-600 px-5 font-bold text-white sm:hidden"
-            >
-              + Add task
-            </button>
+        <section className="min-w-0">
+          <div className="mb-5">
+            <p className="text-sm font-bold text-indigo-600">My workspace</p>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              Today's tasks
+            </h1>
           </div>
 
-          <div className="mb-4 grid grid-cols-1 gap-2 rounded-2xl border border-slate-200 bg-white p-3 sm:grid-cols-3">
+          <div className="mb-4 grid grid-cols-1 gap-2 rounded-2xl border border-slate-200/80 bg-white p-2 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:grid-cols-3 sm:p-3">
             <select
               aria-label="Filter priority"
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm"
+              className="min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-900"
             >
               <option value="all">All priorities</option>
               <option value="high">High priority</option>
@@ -315,7 +318,7 @@ export default function App() {
               aria-label="Filter status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm"
+              className="min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-900"
             >
               <option value="all">All statuses</option>
               <option value="active">Active</option>
@@ -325,7 +328,7 @@ export default function App() {
               aria-label="Sort tasks"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm"
+              className="min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-900"
             >
               <option value="deadline">Sort by deadline</option>
               <option value="priority">Sort by priority</option>
@@ -344,6 +347,17 @@ export default function App() {
           />
         </section>
       </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setEditing(null);
+          setFormOpen(true);
+        }}
+        className="fixed bottom-5 left-1/2 z-40 min-h-14 -translate-x-1/2 rounded-2xl bg-indigo-600 px-7 text-base font-extrabold text-white shadow-[0_14px_35px_rgba(79,70,229,0.38)] sm:hidden"
+      >
+        + Add task
+      </button>
 
       <AddTodoForm
         key={editing?.id || "new"}
