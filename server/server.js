@@ -15,7 +15,11 @@ const isProduction = process.env.NODE_ENV === "production";
 
 app.set("trust proxy", 1);
 
-const configuredOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http://localhost:5173")
+const configuredOrigins = (
+  process.env.CLIENT_URLS ||
+  process.env.CLIENT_URL ||
+  "http://localhost:5173"
+)
   .split(",")
   .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
@@ -27,10 +31,14 @@ app.use(
       if (!origin) return callback(null, true);
 
       const normalizedOrigin = origin.replace(/\/$/, "");
-      const allowed = configuredOrigins.includes(normalizedOrigin)
-        || normalizedOrigin.endsWith(".vercel.app");
+      const allowed =
+        configuredOrigins.includes(normalizedOrigin) ||
+        normalizedOrigin.endsWith(".vercel.app");
 
-      callback(allowed ? null : new Error("Origin is not allowed by CORS"), allowed);
+      callback(
+        allowed ? null : new Error("Origin is not allowed by CORS"),
+        allowed,
+      );
     },
   }),
 );
