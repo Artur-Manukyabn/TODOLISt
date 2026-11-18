@@ -32,8 +32,9 @@ app.use(
       if (!origin) return callback(null, false);
 
       const normalizedOrigin = origin.replace(/\/$/, "");
-      const allowed = configuredOrigins.includes(normalizedOrigin)
-        || normalizedOrigin.endsWith(".vercel.app");
+      const allowed =
+        configuredOrigins.includes(normalizedOrigin) ||
+        normalizedOrigin.endsWith(".vercel.app");
 
       if (!allowed) {
         return callback(new Error("Origin is not allowed by CORS"), false);
